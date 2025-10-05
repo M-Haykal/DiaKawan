@@ -12,39 +12,33 @@
 
 <body>
     <!-- Navigation-->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg bg-success">
         <div class="container px-5">
-            <a class="navbar-brand" href="#!">DiaKawan</a>
+            <a class="navbar-brand text-white" href="#!">DiaKawan</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                 aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="#!">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#!">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#!">Contact</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#!">Services</a></li>
+                    <li class="nav-item"><a class="nav-link text-white active" aria-current="page"
+                            href="{{ route('user.home') }}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#!">About</a></li>
+                    <li class="nav-item"><a class="nav-link text-white"
+                            href="{{ route('user.products.index') }}">Product</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{{ route('user.blogs.index') }}">Blog</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link text-white"
+                            href="{{ route('user.seminars.index') }}">Seminar</a></li>
                 </ul>
             </div>
         </div>
     </nav>
-    <!-- Header-->
-    <header class="bg-dark py-5">
-        <div class="container px-4 px-lg-5 my-5">
-            <div class="text-center text-white">
-                <h1 class="display-4 fw-bolder">Shop in style</h1>
-                <p class="lead fw-normal text-white-50 mb-0">With this shop hompeage template</p>
-            </div>
-        </div>
-    </header>
     <!-- Section-->
     <section class="py-5">
-        <div class="container px-4 px-lg-5 mt-5">
-            @yield('content')
-        </div>
+        @yield('content')
     </section>
     <!-- Footer-->
-    <footer class="py-5 bg-dark">
+    <footer class="py-5 bg-success">
         <div class="container">
             <p class="m-0 text-center text-white">Copyright © Your Website 2023</p>
         </div>
@@ -65,6 +59,7 @@
     })();
 </script>
 <!--End of Tawk.to Script-->
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('services.midtrans.client_key') }}"></script>
 <script src="{{ asset('js/bootstrap.js') }}"></script>
 <script src="{{ asset('js/bootstrap.min.js') }}"></script>
 <script src="{{ asset('js/bootstrap.bundle.js') }}"></script>

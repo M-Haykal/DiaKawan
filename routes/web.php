@@ -9,6 +9,7 @@ use App\Http\Controllers\Dashboard\SeminarController;
 use App\Http\Controllers\Dashboard\BookingController;
 use App\Http\Controllers\Dashboard\OrderController;
 use App\Http\Controllers\User\UserController as UserUserController;
+use App\Http\Controllers\User\OrderController as UserOrderController;
 
 // ===================== AUTH =====================
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
@@ -18,14 +19,14 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // ===================== USER =====================
 Route::prefix('users')->middleware('auth')->group(function () {
-    Route::get('/', [UserUserController::class, 'index'])->name('home');
+    Route::get('/', [UserUserController::class, 'index'])->name('user.home');
     Route::middleware(['role:User'])->group(function () {
-        Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-        Route::get('/blogs', [BlogController::class, 'index'])->name('blogs.index');
-        Route::get('/seminars', [SeminarController::class, 'index'])->name('seminars.index');
-
-        Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
-
+        Route::get('/products', [UserUserController::class, 'product'])->name('user.products.index');
+        Route::get('/blogs', [UserUserController::class, 'blog'])->name('user.blogs.index');
+        Route::get('/blog/{id}', [UserUserController::class, 'detailBlog'])->name('user.blogs.detail');
+        Route::get('/seminars', [UserUserController::class, 'seminar'])->name('user.seminars.index');
+        Route::post('/order/direct/{id}', [UserOrderController::class, 'directOrder'])->name('order.direct');
+        Route::post('/bookings', [UserUserController::class, 'store'])->name('bookings.store');
         Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
         Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
     });
@@ -49,15 +50,17 @@ Route::prefix('dashboard')->middleware('auth')->group(function () {
 
     // ========== GRAPHIC DESIGNER ==========
     Route::middleware(['role:Graphic Designer|Admin'])->group(function () {
-        Route::resource('/products', ProductController::class)->only(['create', 'store', 'edit', 'update', 'destroy']);
-        Route::resource('/blogs', BlogController::class)->only(['create', 'store', 'edit', 'update']);
+        Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+        Route::get('/product/{id}', [ProductController::class, 'show'])->name('products.show');
+        Route::resource('/blogs', BlogController::class)->only(['index', 'create', 'store', 'show', 'update']);
         Route::resource('/seminars', SeminarController::class)->only(['create', 'store', 'edit', 'update']);
     });
 
     // ========== CONTENT CREATOR ==========
     Route::middleware(['role:Content Creator|Admin'])->group(function () {
-        Route::resource('/blogs', BlogController::class)->only(['create', 'store', 'edit', 'update']);
-        Route::resource('/seminars', SeminarController::class)->only(['create', 'store', 'edit', 'update']);
+        Route::resource('/blogs', BlogController::class)->only(['index', 'create', 'store', 'edit', 'update', 'show']);
+        Route::get('/seminars', [SeminarController::class, 'index'])->name('seminars.index');
+        // Route::resource('/seminars', SeminarController::class)->only(['index','create', 'store', 'show']);
     });
 
     // ========== CINEMATOGRAPHER ==========
@@ -67,8 +70,7 @@ Route::prefix('dashboard')->middleware('auth')->group(function () {
 
     // ========== DATA ANALYST & SURVEYOR ==========
     Route::middleware(['role:Data Analyst|Surveyor & Research|Admin'])->group(function () {
-        Route::resource('/products', ProductController::class)->only(['create', 'store', 'show', 'update', 'destroy']);
-        Route::put('/nutrition/{id}', [ProductController::class, 'updateNutrition'])->name('products.nutrition.update');
+        Route::resource('/products', ProductController::class)->only(['index', 'create', 'store', 'show', 'update', 'destroy']);
         Route::get('/nutrition/{id}/analyze', [ProductController::class, 'analyzeNutrition'])->name('products.nutrition.analyze');
     });
 

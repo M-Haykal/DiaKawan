@@ -224,10 +224,12 @@ h6, .h6, h5, .h5, h4, .h4, h3, .h3, h2, .h2, h1, .h1 {
 
 h1, .h1 {
   font-size: calc(1.375rem + 1.5vw);
+  color: var(--bs-success);
 }
 @media (min-width: 1200px) {
   h1, .h1 {
     font-size: 2.5rem;
+    color: var(--bs-success);
   }
 }
 
@@ -648,10 +650,12 @@ progress {
   font-size: calc(1.425rem + 2.1vw);
   font-weight: 300;
   line-height: 1.2;
+  color: var(--bs-success);
 }
 @media (min-width: 1200px) {
   .display-5 {
     font-size: 3rem;
+    color: var(--bs-success);
   }
 }
 

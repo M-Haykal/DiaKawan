@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Blog extends Model
 {
@@ -13,8 +14,8 @@ class Blog extends Model
         'title',
         'subtitle',
         'content',
-        'user_id',
         'slug',
+        'user_id',
     ];
 
     public function user()
@@ -22,5 +23,11 @@ class Blog extends Model
         return $this->belongsTo(User::class);
     }
 
-    
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($blog) {
+            $blog->slug = Str::slug($blog->title) . '-' . Str::random(5);
+        });
+    }
 }

@@ -18,7 +18,7 @@
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
-
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <!-- Custom styles for this template-->
     <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/bootstrap.css') }}">
@@ -92,7 +92,7 @@
                 {{-- Blog --}}
                 @can('View Blog')
                     <li class="nav-item">
-                        <a class="nav-link" href="#!">
+                        <a class="nav-link" href="{{ route('blogs.index') }}">
                             <i class="fas fa-fw fa-blog"></i>
                             <span>Blog</span>
                         </a>
@@ -102,7 +102,7 @@
                 {{-- Seminar --}}
                 @can('View Seminar')
                     <li class="nav-item">
-                        <a class="nav-link" href="#!">
+                        <a class="nav-link" href="{{ route('seminars.index') }}">
                             <i class="fas fa-fw fa-microphone"></i>
                             <span>Seminar</span>
                         </a>
@@ -272,6 +272,10 @@
     {{-- <script src="{{ asset('js/bootstrap.min.js') }}"></script> --}}
 
     {{-- <script src="{{ asset('js/bootstrap.bundle.js') }}"></script> --}}
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdn.tiny.cloud/1/qmsq1hga0tygul287yejg9t6gpfa5npa36c0ezchh4zom7x1/tinymce/5/tinymce.min.js"
+        referrerpolicy="origin"></script>
 
     @stack('script')
 </body>
