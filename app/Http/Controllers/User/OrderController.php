@@ -15,6 +15,12 @@ use Midtrans\Config;
 
 class OrderController extends Controller
 {
+    public function index()
+    {
+        $user = Auth::user();
+        $carts = Cart::with('items.product')->where('user_id', $user->id)->first();
+        return view('user.pages.order', compact('carts'));
+    }
     public function checkout(Request $request)
     {
         $user = Auth::user();
@@ -123,7 +129,7 @@ class OrderController extends Controller
         // Data transaksi ke Midtrans
         $params = [
             'transaction_details' => [
-                'order_id' => 'ORDER-' . $order->id . '-' . time(),
+                'order_id' => 'ORDER-' . $order->id . '-' . now()->format('YmdHis'),
                 'gross_amount' => $totalPrice,
             ],
             'customer_details' => [
@@ -152,5 +158,17 @@ class OrderController extends Controller
 
         // Kirim Snap token ke view
         return view('user.pages.payment', compact('snapToken', 'order'));
+    }
+
+    public function success($orderId)
+    {
+        $order = Order::findOrFail($orderId);
+        return view('user.pages.order-success', compact('order'));
+    }
+
+    public function pending($orderId)
+    {
+        $order = Order::findOrFail($orderId);
+        return view('user.pages.order-pending', compact('order'));
     }
 }

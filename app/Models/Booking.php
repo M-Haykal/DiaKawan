@@ -20,6 +20,11 @@ class Booking extends Model
         'user_id',
     ];
 
+    protected $casts = [
+        'booking_date' => 'date',
+        'booking_time' => 'datetime:H:i',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

@@ -22,7 +22,9 @@ class ProductController extends Controller
     public function create()
     {
         $categories = Category::all();
-        return view('dashboard.action.product.create_product', compact('categories'));
+        $nutrients = ['Protein', 'Karbohidrat', 'Lemak', 'Gula', 'Serat'];
+
+        return view('dashboard.action.product.create_product', compact('categories', 'nutrients'));
     }
 
     public function store(Request $request)

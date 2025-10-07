@@ -8,31 +8,46 @@ use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
 use Auth;
+use App\Models\Transaction;
+use App\Models\OrderItem;
+use App\Models\Order;
+use Midtrans\Snap;
+use Midtrans\Config;
 
 class CartController extends Controller
 {
-    public function addToCart(Request $request)
+    public function index()
+    {
+        $cart = Cart::with('items.product')
+            ->where('user_id', Auth::id())
+            ->first();
+
+        $items = $cart ? $cart->items : collect();
+        $total = $items->sum(fn($item) => $item->price * $item->quantity);
+
+        return view('user.pages.cart', compact('items', 'total'));
+    }
+
+    public function add(Request $request)
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $user = Auth::user();
-
-        // Ambil atau buat cart baru
-        $cart = Cart::firstOrCreate(['user_id' => $user->id]);
-
         $product = Product::findOrFail($request->product_id);
 
-        // Cek apakah produk sudah ada di cart
+        $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
+
         $cartItem = CartItem::where('cart_id', $cart->id)
             ->where('product_id', $product->id)
             ->first();
 
         if ($cartItem) {
-            $cartItem->quantity += $request->quantity;
-            $cartItem->save();
+            $cartItem->update([
+                'quantity' => $cartItem->quantity + $request->quantity,
+                'price' => $product->price,
+            ]);
         } else {
             CartItem::create([
                 'cart_id' => $cart->id,
@@ -42,21 +57,110 @@ class CartController extends Controller
             ]);
         }
 
-        return response()->json(['message' => 'Produk ditambahkan ke keranjang']);
+        return redirect()->back()->with('success', 'Produk berhasil ditambahkan ke keranjang!');
     }
 
-    // Lihat isi cart
-    public function viewCart()
+    public function remove($itemId)
     {
-        $cart = Cart::with('items.product')->where('user_id', Auth::id())->first();
-        return view('user.cart', compact('cart'));
-    }
-
-    // Hapus item dari cart
-    public function removeItem($id)
-    {
-        $item = CartItem::findOrFail($id);
+        $item = CartItem::whereHas('cart', fn($q) => $q->where('user_id', Auth::id()))
+            ->findOrFail($itemId);
         $item->delete();
-        return redirect()->back()->with('success', 'Item dihapus dari keranjang');
+
+        return redirect()->route('cart.index')->with('success', 'Produk dihapus dari keranjang.');
+    }
+
+    public function update(Request $request, $itemId)
+    {
+        $request->validate(['quantity' => 'required|integer|min=1']);
+
+        $item = CartItem::whereHas('cart', fn($q) => $q->where('user_id', Auth::id()))
+            ->findOrFail($itemId);
+        $item->update(['quantity' => $request->quantity]);
+
+        return redirect()->route('cart.index');
+    }
+
+    public function checkout(Request $request)
+    {
+        $request->validate([
+            'address' => 'required|string',
+            'phone' => 'required|string',
+        ]);
+
+        $user = auth()->user();
+        $cart = Cart::with('items.product')->where('user_id', $user->id)->first();
+
+        if (!$cart || $cart->items->isEmpty()) {
+            return redirect()->route('user.cart.index')->with('error', 'Keranjang Anda kosong.');
+        }
+
+        // Hitung total
+        $total = $cart->items->sum(fn($item) => $item->price * $item->quantity);
+
+        // Buat Order
+        $order = Order::create([
+            'address' => $request->address,
+            'phone' => $request->phone,
+            'total_price' => $total,
+            'note_order' => $request->note_order,
+            'payment' => 'midtrans',
+            'status' => 'pending',
+            'user_id' => $user->id,
+        ]);
+
+        // Simpan Order Items
+        foreach ($cart->items as $item) {
+            OrderItem::create([
+                'order_id' => $order->id,
+                'product_id' => $item->product_id,
+                'quantity' => $item->quantity,
+                'price' => $item->price,
+            ]);
+        }
+
+        // Konfigurasi Midtrans
+        Config::$serverKey = config('services.midtrans.server_key');
+        Config::$isProduction = config('services.midtrans.is_production');
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
+
+        // Siapkan item_details
+        $itemDetails = [];
+        foreach ($cart->items as $item) {
+            $itemDetails[] = [
+                'id' => $item->product->id,
+                'price' => (int) $item->price,
+                'quantity' => $item->quantity,
+                'name' => $item->product->name,
+            ];
+        }
+
+        $params = [
+            'transaction_details' => [
+                'order_id' => 'ORDER-' . $order->id . '-' . time(),
+                'gross_amount' => (int) $total,
+            ],
+            'customer_details' => [
+                'first_name' => $user->name,
+                'email' => $user->email,
+                'phone' => $request->phone,
+            ],
+            'item_details' => $itemDetails,
+        ];
+
+        $snapToken = Snap::getSnapToken($params);
+
+        // Simpan transaksi
+        Transaction::create([
+            'order_id' => $order->id,
+            'transaction_id' => $params['transaction_details']['order_id'],
+            'payment_type' => 'midtrans',
+            'payload' => json_encode($params),
+        ]);
+
+        // Kosongkan keranjang setelah checkout
+        $cart->items()->delete();
+
+        return view('user.pages.payment', compact('snapToken', 'order'));
     }
 }

@@ -31,7 +31,7 @@ class AuthController extends Controller
             }
 
             // Role selain Admin diarahkan ke home
-            return redirect()->route('home');
+            return redirect()->route('user.home');
         }
 
         return back()->withErrors([

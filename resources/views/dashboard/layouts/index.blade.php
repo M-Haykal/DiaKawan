@@ -36,8 +36,8 @@
 
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="">
-                <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-laugh-wink"></i>
+                <div class="sidebar-brand-icon">
+                    <img src="{{ asset('img/DiaKawan.png') }}" alt="" width="40" height="40">
                 </div>
                 <div class="sidebar-brand-text mx-3">DiaKawan</div>
             </a>
@@ -90,21 +90,11 @@
                 @endcan
 
                 {{-- Blog --}}
-                @can('View Blog')
+                @can('View Blog', 'View Seminar')
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('blogs.index') }}">
+                        <a class="nav-link" href="{{ route('blog_seminar.index') }}">
                             <i class="fas fa-fw fa-blog"></i>
-                            <span>Blog</span>
-                        </a>
-                    </li>
-                @endcan
-
-                {{-- Seminar --}}
-                @can('View Seminar')
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('seminars.index') }}">
-                            <i class="fas fa-fw fa-microphone"></i>
-                            <span>Seminar</span>
+                            <span>Blog and Seminar</span>
                         </a>
                     </li>
                 @endcan
@@ -112,7 +102,7 @@
                 {{-- Booking --}}
                 @can('View Booking')
                     <li class="nav-item">
-                        <a class="nav-link" href="#!">
+                        <a class="nav-link" href="{{ route('bookings.index') }}">
                             <i class="fas fa-fw fa-calendar"></i>
                             <span>Bookings</span>
                         </a>
@@ -259,7 +249,7 @@
 
     <!-- Custom scripts for all pages-->
     <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
-    <script src="{{ asset('js/bootstrap.js') }}"></script>
+    {{-- <script src="{{ asset('js/bootstrap.js') }}"></script> --}}
     <!-- Bootstrap core JavaScript-->
     {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>

@@ -104,35 +104,35 @@
                     </div>
                     <div id="nutrition-fields">
                         <label class="form-label">Data Nutrisi</label>
-                        <div class="nutrition-row mb-3">
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <input type="text" class="form-control" name="nutrisions[0][name]"
-                                        placeholder="Nama Nutrisi (contoh: Gula)" value="{{ old('nutrisions.0.name') }}">
-                                </div>
-                                <div class="col-md-3">
-                                    <input type="number" class="form-control" name="nutrisions[0][quantity]"
-                                        placeholder="Jumlah" value="{{ old('nutrisions.0.quantity') }}">
-                                </div>
-                                <div class="col-md-3">
-                                    <select class="form-select" name="nutrisions[0][unit]">
-                                        <option value="g" {{ old('nutrisions.0.unit') == 'g' ? 'selected' : '' }}>
-                                            Gram (g)
-                                        </option>
-                                        <option value="mg" {{ old('nutrisions.0.unit') == 'mg' ? 'selected' : '' }}>
-                                            MiliGram (mg)
-                                        </option>
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <button type="button" class="btn btn-danger remove-nutrition">Hapus</button>
+                        @foreach ($nutrients as $index => $nutrient)
+                            <div class="nutrition-row mb-3">
+                                <div class="row g-3 align-items-center">
+                                    <div class="col-md-4">
+                                        <input type="text" class="form-control"
+                                            name="nutrisions[{{ $index }}][name]" value="{{ $nutrient }}"
+                                            readonly>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="number" class="form-control"
+                                            name="nutrisions[{{ $index }}][quantity]" placeholder="Jumlah"
+                                            value="{{ old("nutrisions.$index.quantity") }}">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select class="form-select" name="nutrisions[{{ $index }}][unit]">
+                                            <option value="g"
+                                                {{ old("nutrisions.$index.unit") == 'g' ? 'selected' : '' }}>Gram (g)
+                                            </option>
+                                            <option value="mg"
+                                                {{ old("nutrisions.$index.unit") == 'mg' ? 'selected' : '' }}>MiliGram (mg)
+                                            </option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        @endforeach
                     </div>
-                    <div class="d-flex justify-content-between">
-                        <button type="button" class="btn btn-secondary" id="add-nutrition">Tambah Nutrisi</button>
-                        <button type="submit" class="btn btn-primary ms-2">Simpan Produk</button>
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-success">Simpan Produk</button>
                     </div>
                 </form>
             </div>
@@ -182,46 +182,46 @@
 @push('script')
     <script>
         // Nutrition Fields Functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            let nutritionIndex = 1;
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     let nutritionIndex = 1;
 
-            // Tombol tambah nutrisi
-            document.getElementById('add-nutrition').addEventListener('click', function() {
-                const container = document.getElementById('nutrition-fields');
+        //     // Tombol tambah nutrisi
+        //     document.getElementById('add-nutrition').addEventListener('click', function() {
+        //         const container = document.getElementById('nutrition-fields');
 
-                const newRow = document.createElement('div');
-                newRow.classList.add('nutrition-row', 'mb-3');
-                newRow.innerHTML = `
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <input type="text" class="form-control" name="nutrisions[${nutritionIndex}][name]" placeholder="Nama Nutrisi">
-                    </div>
-                    <div class="col-md-3">
-                        <input type="number" class="form-control" name="nutrisions[${nutritionIndex}][quantity]" placeholder="Jumlah">
-                    </div>
-                    <div class="col-md-3">
-                        <select class="form-select" name="nutrisions[${nutritionIndex}][unit]">
-                            <option value="g">Gram (g)</option>
-                            <option value="mg">MiliGram (mg)</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="button" class="btn btn-danger remove-nutrition">Hapus</button>
-                    </div>
-                </div>
-            `;
+        //         const newRow = document.createElement('div');
+        //         newRow.classList.add('nutrition-row', 'mb-3');
+        //         newRow.innerHTML = `
+    //         <div class="row g-3">
+    //             <div class="col-md-4">
+    //                 <input type="text" class="form-control" name="nutrisions[${nutritionIndex}][name]" placeholder="Nama Nutrisi">
+    //             </div>
+    //             <div class="col-md-3">
+    //                 <input type="number" class="form-control" name="nutrisions[${nutritionIndex}][quantity]" placeholder="Jumlah">
+    //             </div>
+    //             <div class="col-md-3">
+    //                 <select class="form-select" name="nutrisions[${nutritionIndex}][unit]">
+    //                     <option value="g">Gram (g)</option>
+    //                     <option value="mg">MiliGram (mg)</option>
+    //                 </select>
+    //             </div>
+    //             <div class="col-md-2">
+    //                 <button type="button" class="btn btn-danger remove-nutrition">Hapus</button>
+    //             </div>
+    //         </div>
+    //     `;
 
-                container.appendChild(newRow);
-                nutritionIndex++;
-            });
+        //         container.appendChild(newRow);
+        //         nutritionIndex++;
+        //     });
 
-            // Hapus baris nutrisi
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('remove-nutrition')) {
-                    e.target.closest('.nutrition-row').remove();
-                }
-            });
-        });
+        //     // Hapus baris nutrisi
+        //     document.addEventListener('click', function(e) {
+        //         if (e.target.classList.contains('remove-nutrition')) {
+        //             e.target.closest('.nutrition-row').remove();
+        //         }
+        //     });
+        // });
 
         document.addEventListener('DOMContentLoaded', function() {
             // ==== PREVIEW VIDEO ====

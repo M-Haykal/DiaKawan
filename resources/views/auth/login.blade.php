@@ -16,8 +16,8 @@
             <div class="row">
                 <div class="col-sm-6 text-black my-5">
 
-                    <div class="px-5 ms-xl-4">
-                        <i class="fas fa-crow fa-2x me-3 pt-5 mt-xl-4" style="color: #709085;"></i>
+                    <div class="px-5 ms-xl-4 d-flex">
+                        <img src="{{ asset('img/DiaKawan.png') }}" alt="Logo" width="50" height="50">
                         <span class="h1 fw-bold mb-0">DiaKawan</span>
                     </div>
 
