@@ -9,6 +9,7 @@ class Order extends Model
     protected $table = 'orders';
 
     protected $fillable = [
+        'total_quantity',
         'address',
         'phone',
         'total_price',

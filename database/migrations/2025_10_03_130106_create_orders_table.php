@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('phone');
             $table->integer('total_price');
             $table->text('note_order')->nullable();
-            $table->enum('payment', ['cash', 'transfer', 'ewallet'])->default('cash');
-            $table->enum('status', ['pending', 'delivered', 'canceled'])->default('pending');
+            $table->enum('payment', ['cash', 'transfer', 'ewallet', 'midtrans'])->default('cash');
+            $table->enum('status', ['pending', 'processing', 'delivered', 'arrived', 'canceled'])->default('pending');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();

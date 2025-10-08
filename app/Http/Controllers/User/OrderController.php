@@ -21,6 +21,7 @@ class OrderController extends Controller
         $carts = Cart::with('items.product')->where('user_id', $user->id)->first();
         return view('user.pages.order', compact('carts'));
     }
+
     public function checkout(Request $request)
     {
         $user = Auth::user();
@@ -57,37 +58,6 @@ class OrderController extends Controller
             ->with('success', 'Pesanan berhasil dibuat');
     }
 
-    // Order langsung tanpa ke cart
-    // public function directOrder(Request $request)
-    // {
-    //     $request->validate([
-    //         'product_id' => 'required|exists:products,id',
-    //         'quantity' => 'required|integer|min:1',
-    //         'address' => 'required|string',
-    //         'phone' => 'required|string',
-    //     ]);
-
-    //     $user = Auth::user();
-    //     $product = Product::findOrFail($request->product_id);
-
-    //     $order = $user->orders()->create([
-    //         'address' => $request->address,
-    //         'phone' => $request->phone,
-    //         'total_price' => $product->price * $request->quantity,
-    //         'payment' => $request->payment ?? 'cash',
-    //         'status' => 'pending',
-    //     ]);
-
-    //     $order->orderItems()->create([
-    //         'product_id' => $product->id,
-    //         'quantity' => $request->quantity,
-    //         'price' => $product->price,
-    //     ]);
-
-    //     return redirect()->route('orders.show', $order->id)
-    //         ->with('success', 'Pesanan langsung berhasil dibuat');
-    // }
-
     public function directOrder(Request $request, $id)
     {
         $user = Auth::user();
@@ -97,67 +67,67 @@ class OrderController extends Controller
             'quantity' => 'required|integer|min:1',
             'address' => 'required|string',
             'phone' => 'required|string',
+            'payment' => 'required|in:cash,transfer,ewallet,midtrans',
         ]);
 
         $quantity = $validated['quantity'];
         $totalPrice = $product->price * $quantity;
 
-        // Buat Order
         $order = Order::create([
             'address' => $validated['address'],
             'phone' => $validated['phone'],
             'total_price' => $totalPrice,
             'note_order' => $request->note_order,
-            'payment' => 'midtrans',
+            'payment' => $validated['payment'],
             'status' => 'pending',
             'user_id' => $user->id,
         ]);
 
-        // Tambah order item
         $order->orderItems()->create([
             'product_id' => $product->id,
             'quantity' => $quantity,
             'price' => $product->price,
         ]);
 
-        // Konfigurasi Midtrans
-        Config::$serverKey = config('services.midtrans.server_key');
-        Config::$isProduction = config('services.midtrans.is_production');
-        Config::$isSanitized = true;
-        Config::$is3ds = true;
+        // Jika Midtrans → proses pembayaran
+        if ($validated['payment'] === 'midtrans') {
+            Config::$serverKey = config('services.midtrans.server_key');
+            Config::$isProduction = config('services.midtrans.is_production');
+            Config::$isSanitized = true;
+            Config::$is3ds = true;
 
-        // Data transaksi ke Midtrans
-        $params = [
-            'transaction_details' => [
-                'order_id' => 'ORDER-' . $order->id . '-' . now()->format('YmdHis'),
-                'gross_amount' => $totalPrice,
-            ],
-            'customer_details' => [
-                'first_name' => $user->name,
-                'email' => $user->email,
-                'phone' => $validated['phone'],
-            ],
-            'item_details' => [
-                [
-                    'id' => $product->id,
-                    'price' => $product->price,
-                    'quantity' => $quantity,
-                    'name' => $product->name,
+            $params = [
+                'transaction_details' => [
+                    'order_id' => 'ORDER-' . $order->id . '-' . now()->format('YmdHis'),
+                    'gross_amount' => (int) $totalPrice,
                 ],
-            ],
-        ];
+                'customer_details' => [
+                    'first_name' => $user->name,
+                    'email' => $user->email,
+                    'phone' => $validated['phone'],
+                ],
+                'item_details' => [
+                    [
+                        'id' => $product->id,
+                        'price' => (int) $product->price,
+                        'quantity' => $quantity,
+                        'name' => $product->name,
+                    ]
+                ],
+            ];
 
-        $snapToken = Snap::getSnapToken($params);
+            $snapToken = Snap::getSnapToken($params);
 
-        // Simpan transaksi
-        $order->transaction()->create([
-            'transaction_id' => $params['transaction_details']['order_id'],
-            'payment_type' => 'midtrans',
-            'payload' => json_encode($params),
-        ]);
+            $order->transaction()->create([
+                'transaction_id' => $params['transaction_details']['order_id'],
+                'payment_type' => 'midtrans',
+                'payload' => json_encode($params),
+            ]);
 
-        // Kirim Snap token ke view
-        return view('user.pages.payment', compact('snapToken', 'order'));
+            return view('user.pages.payment', compact('snapToken', 'order'));
+        }
+
+        return redirect()->back()->with('success', 'Pesanan berhasil dibuat!');
     }
 
     public function success($orderId)

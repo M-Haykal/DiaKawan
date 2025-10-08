@@ -53,7 +53,7 @@
                                 alt="{{ $product->name }}" style="height: 200px; object-fit: cover;">
                             <div class="card-body p-4 text-center">
                                 <h5 class="fw-bold text-dark">{{ $product->name }}</h5>
-                                <p class="text-muted small">{{ Str::limit($product->description, 60) }}</p>
+                                <p class="text-muted small">{{ Str::limit($product->description, 50) }}</p>
                                 <div class="mt-2">
                                     <strong class="text-success">Rp
                                         {{ number_format($product->price, 0, ',', '.') }}</strong>

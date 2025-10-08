@@ -8,7 +8,7 @@
         <div class="bg-success text-white p-4 rounded mb-5 shadow">
             <div class="row justify-content-center">
                 <div class="col-md-8">
-                    <h3 class="mb-3 text-center">Artikel Kesehatan & Gizi</h3>
+                    <h1 class="mb-3 text-center">Artikel Kesehatan & Gizi</h1>
                     <form method="GET" class="d-flex">
                         <input type="text" name="search" class="form-control"
                             placeholder="Cari artikel (misal: diet sehat, gula darah, dll)..."

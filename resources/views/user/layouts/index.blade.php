@@ -5,10 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="shortcut icon" href="{{ asset('img/DiaKawan.png') }}" type="image/x-icon">
     <title>@yield('title')</title>
     <link rel="stylesheet" href="{{ asset('css/bootstrap.css') }}">
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     @stack('style')
 </head>
 
@@ -25,9 +29,10 @@
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li class="nav-item"><a class="nav-link text-white active" aria-current="page"
                             href="{{ route('user.home') }}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#!">About</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{{ route('user.about') }}">Tentang
+                            Kami</a></li>
                     <li class="nav-item"><a class="nav-link text-white"
-                            href="{{ route('user.products.index') }}">Product</a></li>
+                            href="{{ route('user.products.index') }}">Produk</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="{{ route('user.blogs.index') }}">Blog</a>
                     </li>
                     <li class="nav-item"><a class="nav-link text-white"
@@ -39,8 +44,9 @@
                                 Menu
                             </button>
                             <ul class="dropdown-menu dropdown-menu-lg-end">
-                                <li><a class="dropdown-item" href="{{ route('user.order-history.index') }}">Order</a></li>
-                                <li><a class="dropdown-item" href="{{ route('cart.index') }}">Cart</a></li>
+                                <li><a class="dropdown-item" href="{{ route('user.order-history.index') }}">Pesanan</a>
+                                </li>
+                                <li><a class="dropdown-item" href="{{ route('cart.index') }}">Keranjang</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
@@ -90,7 +96,6 @@
 <script src="{{ asset('js/bootstrap.bundle.js') }}"></script> --}}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 @stack('script')
 

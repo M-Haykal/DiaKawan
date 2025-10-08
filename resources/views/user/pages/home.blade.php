@@ -18,8 +18,8 @@
                     </div>
                 </div>
                 <div class="col-lg-6 text-center">
-                    <img src="https://via.placeholder.com/600x400/28a745/ffffff?text=Healthy+Food"
-                        class="img-fluid rounded shadow" alt="Makanan Sehat DiaKawan">
+                    <img src="{{ asset('img/home.png') }}" width="400" height="600" class="img-fluid"
+                        alt="Makanan Sehat DiaKawan">
                 </div>
             </div>
         </div>
@@ -30,17 +30,18 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-6 mb-4 mb-lg-0">
-                    <img src="https://via.placeholder.com/500x400/28a745/ffffff?text=About+Us"
-                        class="img-fluid rounded shadow" alt="Tentang DiaKawan">
+                    <img src="{{ asset('img/about.png') }}" width="400" height="600" class="img-fluid"
+                        alt="Tentang DiaKawan">
                 </div>
                 <div class="col-lg-6 d-flex flex-column justify-content-center">
-                    <h2 class="display-6 fw-bold text-success">Tentang DiaKawan</h2>
-                    <p class="lead">Kami percaya bahwa makanan sehat adalah fondasi utama dari kehidupan yang berkualitas.
-                        Didirikan sejak 2025, DiaKawan telah melayani ribuan pelanggan dengan menu seimbang, rendah gula,
-                        tinggi serat, dan bebas MSG.</p>
-                    <p>Kami bekerja sama dengan ahli gizi dan koki berpengalaman untuk memastikan setiap porsi tidak hanya
-                        sehat, tapi juga lezat dan menggugah selera.</p>
-                    <a href="#!" class="btn btn-success w-25 mt-3">Selengkapnya</a>
+                    <h2 class="display-4 fw-bold text-success">Tentang DiaKawan</h2>
+                    <p class="lead">DiaKawan adalah sebuah ide usaha mikro yang berdiri pada tahun 2025. Yang menyediakan
+                        berbagai macam makanan sehat serta aman bagi penderita diabetes. Diambil dari kata "Dia" (dari
+                        Diabetes)
+                        dan "Kawan" (teman), menyiratkan produk yang aman dan bersahabat bagi penderita diabetes. DiaKawan
+                        juga
+                        menjadi bentuk dukungan terhadap pola hidup sehat & seimbang masyarakat Indonesia.</p>
+                    <a href="{{ route('user.about') }}" class="btn btn-success w-25 mt-3">Selengkapnya</a>
                 </div>
             </div>
         </div>
@@ -50,23 +51,23 @@
     <section class="py-5 bg-white">
         <div class="container">
             <div class="text-center mb-5">
-                <h2 class="display-6 fw-bold text-success">Menu Terbaru</h2>
+                <h2 class="display-4 fw-bold text-success">Menu Terbaru</h2>
                 <p class="text-muted">Pilihan sehat untuk hari ini dan besok</p>
             </div>
             <div class="row g-4">
-                @forelse ($latestProducts as $product)
+                @forelse ($latestProducts as $latestProduct)
                     <div class="col-md-6 col-lg-4">
                         <div class="card h-100 shadow-sm border-0">
-                            <img src="{{ asset('storage/' . json_decode($latestProducts->product)[0]) }}"
-                                class="card-img-top" alt="{{ $latestProducts->name }}">
+                            <img src="{{ asset('storage/' . json_decode($latestProduct->images)[0] ?? 'default.jpg') }}"
+                                class="card-img-top" alt="{{ $latestProduct->name }}" style="height: 200px; object-fit: cover;">
                             <div class="card-body d-flex flex-column">
-                                <h5 class="card-title">{{ $latestProducts->name }}</h5>
-                                <p class="card-text flex-grow-1">{{ $latestProducts->description }}</p>
+                                <h5 class="card-title">{{ $latestProduct->name }}</h5>
+                                <p class="card-text flex-grow-1">{{ Str::limit($latestProduct->description, 50) }}</p>
                                 <div class="mt-auto">
-                                    <span class="badge bg-success">Sehat & Rendah Kalori</span>
+                                    <span class="badge bg-success">{{ $latestProduct->category->name }}</span>
                                     <div class="mt-2">
-                                        <strong>Rp {{ number_format($latestProducts->price, 0, ',', '.') }}</strong>
-                                        <a href="{{ route('user.products.detail', $product->id) }}"
+                                        <strong>Rp {{ number_format($latestProduct->price, 0, ',', '.') }}</strong>
+                                        <a href="{{ route('user.products.detail', $latestProduct->id) }}"
                                             class="btn btn-sm btn-success float-end">Detail</a>
                                     </div>
                                 </div>
@@ -87,7 +88,7 @@
     <section id="booking" class="py-5 bg-success text-white">
         <div class="container">
             <div class="text-center mb-5">
-                <h2 class="display-6 fw-bold">Layanan Booking</h2>
+                <h2 class="display-4 fw-bold">Layanan Kami</h2>
                 <p class="lead">Pilih layanan yang sesuai dengan kebutuhan Anda</p>
             </div>
             <div class="row g-4">
@@ -127,7 +128,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-8">
-                    <h2 class="display-6 fw-bold text-success">Hubungi Kami</h2>
+                    <h2 class="display-4 fw-bold text-success">Hubungi Kami</h2>
                     <p class="lead">Ingin tahu lebih lanjut? Tim kami siap membantu!</p>
                     <div class="mt-4">
                         <p><i class="fas fa-phone me-2"></i> +62 812-3456-7890</p>

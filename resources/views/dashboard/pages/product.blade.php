@@ -30,12 +30,9 @@
                         <div class="col">
                             <div class="card">
                                 <img src="{{ asset('storage/' . json_decode($product->images)[0]) }}" class="card-img-top"
-                                    alt="{{ $product->name }}">
+                                    alt="{{ $product->name }}" style="height: 200px; object-fit: cover;">
                                 <div class="card-body">
                                     <h5 class="card-title">{{ $product->name }}</h5>
-                                    <p class="card-text">
-                                        {{ $product->description }}
-                                    </p>
                                     <span>
                                         Stock: {{ $product->stock }}
                                     </span>

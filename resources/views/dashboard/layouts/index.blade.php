@@ -82,7 +82,7 @@
                 {{-- Orders --}}
                 @can('View Order')
                     <li class="nav-item">
-                        <a class="nav-link" href="#!">
+                        <a class="nav-link" href="{{ route('orders.index') }}">
                             <i class="fas fa-fw fa-sort"></i>
                             <span>Orders</span>
                         </a>
@@ -186,7 +186,7 @@
                                     Profile
                                 </a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{{ route('logout') }}" data-toggle="modal"
+                                <a class="dropdown-item" href="" data-toggle="modal"
                                     data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Logout
@@ -247,27 +247,29 @@
         </div>
     </div>
 
-    <!-- Custom scripts for all pages-->
-    <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
-    {{-- <script src="{{ asset('js/bootstrap.js') }}"></script> --}}
-    <!-- Bootstrap core JavaScript-->
-    {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
-    <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-
     <!-- Core plugin JavaScript-->
-    <script src="{{ asset('vendor/jquery/jquery.js') }}"></script>
+    <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap/js/bootstrap.js') }}"></script>
+    <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
+
+    <!-- Optional: jQuery Easing -->
     <script src="{{ asset('vendor/jquery-easing/jquery.easing.min.js') }}"></script>
 
-    {{-- <script src="{{ asset('js/bootstrap.min.js') }}"></script> --}}
+    <!-- SB Admin 2 scripts -->
+    <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
 
-    {{-- <script src="{{ asset('js/bootstrap.bundle.js') }}"></script> --}}
+    <!-- Font Awesome -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
 
+    <!-- Leaflet -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <!-- TinyMCE -->
     <script src="https://cdn.tiny.cloud/1/qmsq1hga0tygul287yejg9t6gpfa5npa36c0ezchh4zom7x1/tinymce/5/tinymce.min.js"
         referrerpolicy="origin"></script>
 
     @stack('script')
+
 </body>
 
 </html>

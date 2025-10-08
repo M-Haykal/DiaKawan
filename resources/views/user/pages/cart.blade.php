@@ -47,7 +47,7 @@
                                             </td>
                                             <td>Rp {{ number_format($item->price, 0, ',', '.') }}</td>
                                             <td>
-                                                <form action="{{ route('user.cart.update', $item->id) }}" method="POST"
+                                                <form action="{{ route('cart.update', $item->id) }}" method="POST"
                                                     class="d-inline">
                                                     @csrf
                                                     @method('PUT')
@@ -58,7 +58,7 @@
                                             </td>
                                             <td>Rp {{ number_format($item->price * $item->quantity, 0, ',', '.') }}</td>
                                             <td>
-                                                <form action="{{ route('user.cart.remove', $item->id) }}" method="POST"
+                                                <form action="{{ route('cart.remove', $item->id) }}" method="POST"
                                                     class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
@@ -99,6 +99,15 @@
                                     <label for="phone" class="form-label">Nomor WhatsApp</label>
                                     <input type="text" name="phone" id="phone" class="form-control"
                                         value="{{ Auth::user()->phone ?? '' }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="payment" class="form-label">Metode Pembayaran</label>
+                                    <select name="payment" id="payment" class="form-select" required>
+                                        <option value="cash">Bayar di Tempat (Cash)</option>
+                                        <option value="transfer">Transfer Bank</option>
+                                        <option value="ewallet">E-Wallet (GoPay, OVO, dll)</option>
+                                        <option value="midtrans">Midtrans (Kartu/QRIS)</option>
+                                    </select>
                                 </div>
                                 <div class="mb-3">
                                     <label for="note_order" class="form-label">Catatan (Opsional)</label>

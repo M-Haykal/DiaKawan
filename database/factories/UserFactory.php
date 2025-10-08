@@ -27,9 +27,11 @@ class UserFactory extends Factory
             'first_name' => $this->faker->firstName(),
             'last_name' => $this->faker->lastName(),
             'username' => $this->faker->unique()->userName(),
-            'email' => $this->faker->unique()->safeEmail(),
+            'email' => function (array $attributes) {
+                return strtolower($attributes['username']) . '@gmail.com';
+            },
             'email_verified_at' => now(),
-            'password' => Hash::make('1234567890'), 
+            'password' => Hash::make('12345678'), 
             'address' => $this->faker->address(),
             'phone' => $this->faker->phoneNumber(),
             'age' => $this->faker->numberBetween(18, 80),
@@ -49,3 +51,4 @@ class UserFactory extends Factory
         ]);
     }
 }
+

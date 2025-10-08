@@ -23,8 +23,9 @@ Route::prefix('users')->middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/', [UserUserController::class, 'index'])->name('user.home');
     Route::middleware(['role:User'])->group(function () {
+        Route::get('/about', [UserUserController::class, 'about'])->name('user.about');
         Route::get('/products', [UserUserController::class, 'product'])->name('user.products.index');
-        Route::get('/order-history', [UserUserController::class, 'index'])->name('user.order-history.index');
+        Route::get('/order-history', [UserUserController::class, 'orders'])->name('user.order-history.index');
         Route::get('/product/{id}', [UserUserController::class, 'detailProduct'])->name('user.products.detail');
         Route::post('/products/{id}/order', [UserOrderController::class, 'directOrder'])->name('products.order');
         Route::get('/konsultasi', [UserUserController::class, 'konsultasi'])->name('user.konsultasi.index');
@@ -35,12 +36,9 @@ Route::prefix('users')->middleware('auth')->group(function () {
         Route::get('/seminar/{id}', [UserUserController::class, 'detailSeminar'])->name('user.seminars.detail');
         Route::post('/order/direct/{id}', [UserOrderController::class, 'directOrder'])->name('order.direct');
         Route::post('/bookings', [UserUserController::class, 'store'])->name('bookings.store');
-        Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
-        Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
-
         Route::post('/cart/checkout', [UserCartController::class, 'checkout'])->name('user.cart.checkout');
-        Route::get('/order/success/{orderId}', [OrderController::class, 'success'])->name('order.success');
-        Route::get('/order/pending/{orderId}', [OrderController::class, 'pending'])->name('order.pending');
+        Route::get('/order/success/{orderId}', [UserOrderController::class, 'success'])->name('order.success');
+        Route::get('/order/pending/{orderId}', [UserOrderController::class, 'pending'])->name('order.pending');
         Route::get('/cart', [UserCartController::class, 'index'])->name('cart.index');
         Route::post('/cart', [UserCartController::class, 'add'])->name('cart.add');
         Route::delete('/cart/{itemId}', [UserCartController::class, 'remove'])->name('cart.remove');
@@ -64,6 +62,8 @@ Route::prefix('dashboard')->middleware('auth')->group(function () {
         Route::post('/permissions/assign', [UserController::class, 'assignPermission'])->name('dashboard.permissions.assign');
         Route::get('/booking', [BookingController::class, 'index'])->name('bookings.index');
         Route::put('/booking/{booking}/edit', [BookingController::class, 'edit'])->name('bookings.edit');
+        Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+        Route::patch('/orders/{id}/update-status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
     });
 
     // ========== GRAPHIC DESIGNER ==========

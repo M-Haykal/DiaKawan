@@ -85,6 +85,7 @@ class CartController extends Controller
         $request->validate([
             'address' => 'required|string',
             'phone' => 'required|string',
+            'payment' => 'required|in:cash,transfer,ewallet,midtrans',
         ]);
 
         $user = auth()->user();
@@ -94,7 +95,6 @@ class CartController extends Controller
             return redirect()->route('user.cart.index')->with('error', 'Keranjang Anda kosong.');
         }
 
-        // Hitung total
         $total = $cart->items->sum(fn($item) => $item->price * $item->quantity);
 
         // Buat Order
@@ -103,7 +103,7 @@ class CartController extends Controller
             'phone' => $request->phone,
             'total_price' => $total,
             'note_order' => $request->note_order,
-            'payment' => 'midtrans',
+            'payment' => $request->payment,
             'status' => 'pending',
             'user_id' => $user->id,
         ]);
@@ -118,49 +118,52 @@ class CartController extends Controller
             ]);
         }
 
-        // Konfigurasi Midtrans
-        Config::$serverKey = config('services.midtrans.server_key');
-        Config::$isProduction = config('services.midtrans.is_production');
-        Config::$isSanitized = true;
-        Config::$is3ds = true;
-
-        // Siapkan item_details
-        $itemDetails = [];
-        foreach ($cart->items as $item) {
-            $itemDetails[] = [
-                'id' => $item->product->id,
-                'price' => (int) $item->price,
-                'quantity' => $item->quantity,
-                'name' => $item->product->name,
-            ];
-        }
-
-        $params = [
-            'transaction_details' => [
-                'order_id' => 'ORDER-' . $order->id . '-' . time(),
-                'gross_amount' => (int) $total,
-            ],
-            'customer_details' => [
-                'first_name' => $user->name,
-                'email' => $user->email,
-                'phone' => $request->phone,
-            ],
-            'item_details' => $itemDetails,
-        ];
-
-        $snapToken = Snap::getSnapToken($params);
-
-        // Simpan transaksi
-        Transaction::create([
-            'order_id' => $order->id,
-            'transaction_id' => $params['transaction_details']['order_id'],
-            'payment_type' => 'midtrans',
-            'payload' => json_encode($params),
-        ]);
-
-        // Kosongkan keranjang setelah checkout
+        // Kosongkan keranjang
         $cart->items()->delete();
 
-        return view('user.pages.payment', compact('snapToken', 'order'));
+        // Jika pilih Midtrans → redirect ke halaman pembayaran
+        if ($request->payment === 'midtrans') {
+            Config::$serverKey = config('services.midtrans.server_key');
+            Config::$isProduction = config('services.midtrans.is_production');
+            Config::$isSanitized = true;
+            Config::$is3ds = true;
+
+            $itemDetails = [];
+            foreach ($cart->items as $item) {
+                $itemDetails[] = [
+                    'id' => $item->product->id,
+                    'price' => (int) $item->price,
+                    'quantity' => $item->quantity,
+                    'name' => $item->product->name,
+                ];
+            }
+
+            $params = [
+                'transaction_details' => [
+                    'order_id' => 'ORDER-' . $order->id . '-' . now()->format('YmdHis'),
+                    'gross_amount' => (int) $total,
+                ],
+                'customer_details' => [
+                    'first_name' => $user->name,
+                    'email' => $user->email,
+                    'phone' => $request->phone,
+                ],
+                'item_details' => $itemDetails,
+            ];
+
+            $snapToken = Snap::getSnapToken($params);
+
+            Transaction::create([
+                'order_id' => $order->id,
+                'transaction_id' => $params['transaction_details']['order_id'],
+                'payment_type' => 'midtrans',
+                'payload' => json_encode($params),
+            ]);
+
+            return view('user.pages.payment', compact('snapToken', 'order'));
+        }
+
+        // Jika bukan Midtrans → langsung sukses
+        return redirect()->route('order.success', $order->id)->with('success', 'Pesanan berhasil dibuat!');
     }
 }

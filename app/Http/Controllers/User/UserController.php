@@ -16,11 +16,13 @@ class UserController extends Controller
 {
     public function index()
     {
-        $avatar = new Avatar();
-        $latestProducts = Product::with('category', 'nutritionProduct')->latest()->take(6)->get();
+        $latestProducts = Product::with('category', 'nutrisionProduct')->latest()->take(6)->get();
+        return view('user.pages.home', compact('latestProducts'));
+    }
 
-        return view('user.pages.home', compact('avatar', 'latestProducts'));
-
+    public function about()
+    {
+        return view('user.pages.about');
     }
 
     public function blog(Request $request)
@@ -64,35 +66,25 @@ class UserController extends Controller
 
     public function detailSeminar($id)
     {
-        // Opsional: cek apakah seminar sudah lewat
-
         $seminar = Seminar::findOrFail($id);
-
-        // dd($seminar);
         return view('user.pages.detail_seminar', compact('seminar'));
     }
-
-    // app/Http/Controllers/User/ProductController.php
 
     public function product(Request $request)
     {
         $query = Product::with('category', 'nutrisionProduct');
-
-        // Filter berdasarkan kategori
         if ($request->filled('category')) {
             $query->whereHas('category', function ($q) use ($request) {
                 $q->where('slug', $request->category);
             });
         }
 
-        // Search berdasarkan nama
         if ($request->filled('search')) {
             $query->where('name', 'LIKE', '%' . $request->search . '%');
         }
 
         $products = $query->simplePaginate(6);
-        $categories = Category::all(); // Pastikan model Category ada
-
+        $categories = Category::all();
         return view('user.pages.product', compact('products', 'categories'));
     }
 
@@ -135,5 +127,11 @@ class UserController extends Controller
 
         return redirect()->route('user.home')
             ->with('success', 'Booking konsultasi berhasil! Tim kami akan menghubungi Anda.');
+    }
+
+    public function orders()
+    {
+        $orders = Auth::user()->orders()->simplePaginate(5);
+        return view('user.pages.order', compact('orders'));
     }
 }
